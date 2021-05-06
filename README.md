@@ -1,0 +1,1 @@
+# go-directequality-checker
