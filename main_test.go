@@ -28,7 +28,7 @@ func TestHasNoDirectEqualityTag(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			actual := hasNoDirectEqualityTag(testCase.tag)
 			if testCase.expected != actual {
-				t.Fatalf("\nTest: %v\tExpected: %v\tActual: %v\t tag: %v", testName, testCase.expected, actual, testCase.tag)
+				t.Errorf("\nTest: %v\tExpected: %v\tActual: %v\t tag: %v", testName, testCase.expected, actual, testCase.tag)
 			}
 		})
 	}
