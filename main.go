@@ -22,9 +22,16 @@ const (
 func main() {
 	flag.Parse()
 
+	rawComparisonsFound := checkPackages(flag.Args())
+	if rawComparisonsFound {
+		os.Exit(1)
+	}
+}
+
+func checkPackages(packagePaths []string) bool {
 	mode := packages.NeedTypes | packages.NeedSyntax | packages.NeedTypesInfo
 	cfg := &packages.Config{Mode: mode}
-	pkgs, err := packages.Load(cfg, flag.Args()...)
+	pkgs, err := packages.Load(cfg, packagePaths...)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "load: %v\n", err)
 		os.Exit(1)
@@ -44,9 +51,7 @@ func main() {
 		}
 	}
 
-	if rawComparisonsFound {
-		os.Exit(1)
-	}
+	return rawComparisonsFound
 }
 
 func walkFile(pkg *packages.Package, file *ast.File) bool {
