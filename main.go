@@ -26,7 +26,7 @@ func main() {
 	cfg := &packages.Config{Mode: mode}
 	pkgs, err := packages.Load(cfg, flag.Args()...)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "load: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "load: %v\n", err)
 		os.Exit(1)
 	}
 	if packages.PrintErrors(pkgs) > 0 {
