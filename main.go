@@ -89,7 +89,7 @@ func walkFile(pkg *packages.Package, file *ast.File) bool {
 func printWarningMessageForExpression(pkg *packages.Package, expr ast.Expr, fieldName string) {
 	fmt.Printf("\033[1;31m[SECURITY]\033[0m Found raw comparison of field '%s'. Use constant time comparison function.\n", fieldName)
 	pos := pkg.Fset.Position(expr.Pos())
-	fmt.Printf("%s:%d\n", pos.Filename, pos.Line)
+	fmt.Print(pos.String())
 
 	code, err := lineOfCode(pos.Filename, pos.Offset)
 	if err != nil {
