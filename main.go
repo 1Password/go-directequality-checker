@@ -88,10 +88,13 @@ func walkFile(pkg *packages.Package, file *ast.File) bool {
 
 func printWarningMessageForExpression(pkg *packages.Package, expr ast.Expr, fieldName string) {
 	fmt.Printf("\033[1;31m[SECURITY]\033[0m Found raw comparison of field '%s'. Use constant time comparison function.\n", fieldName)
-	pos := pkg.Fset.Position(expr.Pos())
-	fmt.Print(pos.String())
+	pos := expr.Pos()
+	position := pkg.Fset.Position(pos)
+	fmt.Println(position.String())
 
-	code, err := lineOfCode(pos.Filename, pos.Offset)
+	file := pkg.Fset.File(pos)
+	lineStart := file.LineStart(file.Line(pos))
+	code, err := lineOfCode(position.Filename, file.Offset(lineStart))
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
@@ -107,17 +110,16 @@ func lineOfCode(path string, offset int) (string, error) {
 	defer readFile.Close()
 
 	scanner := bufio.NewScanner(readFile)
-	scanner.Split(bufio.ScanLines)
 
 	if _, err := readFile.Seek(int64(offset), io.SeekStart); err != nil {
-		return "", fmt.Errorf("Seek to line numer (%d) failed for file (%s)", offset, path)
+		return "", fmt.Errorf("seek failed for file %s", path)
 	}
 
 	if scanner.Scan() {
-		return scanner.Text(), nil
+		return strings.TrimSpace(scanner.Text()), nil
 	}
 
-	return "", fmt.Errorf("line number (%d) exceeded max of file (%s)", offset, path)
+	return "", fmt.Errorf("offset (%d) exceeded max of file (%s)", offset, path)
 }
 
 // returns a types.Struct by diving into underlying types or nil if not applicable
